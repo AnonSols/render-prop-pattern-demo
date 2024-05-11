@@ -16,9 +16,9 @@ const companys = Array.from({ length: 15 }, () => {
 });
 
 interface productType {
-  item: (typeof products)[0];
+  product: (typeof products)[0];
 }
-function ProductItem({ item: product }: productType) {
+function ProductItem({ product }: productType) {
   const { productName, description, price } = product;
   return (
     <li className="product">
@@ -32,7 +32,6 @@ function ProductItem({ item: product }: productType) {
 interface companyType {
   company: (typeof companys)[0];
   defaultVisibility: boolean;
-  // render: (company: typeof companys[0]) => ReactNode
 }
 
 function CompanyItem({ company, defaultVisibility }: companyType) {
@@ -53,28 +52,32 @@ function CompanyItem({ company, defaultVisibility }: companyType) {
 
 CompanyItem;
 
-interface ProductExtendedType {
-  product: typeof products;
-}
-
-interface CompanyExtendedType {
-  company: typeof companys;
-}
-
-type ExtendedType =
-  | (ProductExtendedType & CompanyExtendedType)
-  | { type: "product" | "company" };
-
-interface ListType<T> {
-  items: Array<T>;
+interface ProdType {
+  kind: "products";
+  items: typeof products;
   title: string;
-  render: (item: T) => ReactNode;
+  render: (item: (typeof products)[0]) => ReactNode;
 }
-function List<T extends ExtendedType>({ items, title, render }: ListType<T>) {
+
+interface CompType {
+  kind: "company";
+  title: string;
+  items: typeof companys;
+  render: (item: (typeof companys)[0]) => ReactNode;
+}
+
+type ListType = ProdType | CompType;
+
+function List(item: ListType) {
+  const { items, title, render, kind } = item;
   const [isOpen, setIsOpen] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const displayItems = isCollapsed ? items.slice(0, 3) : items;
+  let displayItems;
+
+  kind === "company"
+    ? (displayItems = isCollapsed ? items.slice(0, 3) : items)
+    : (displayItems = isCollapsed ? items.slice(0, 3) : items);
 
   const toggleOpen = () => {
     setIsOpen((isOpen) => !isOpen);
@@ -91,7 +94,7 @@ function List<T extends ExtendedType>({ items, title, render }: ListType<T>) {
         </button>
       </div>
 
-      {isOpen && <ul className="list">{displayItems.map(render)}</ul>}
+      {isOpen && <ul className="list">{displayItems?.map(render)}</ul>}
 
       <button onClick={() => setIsCollapsed((isCollapsed) => !isCollapsed)}>
         {" "}
@@ -109,14 +112,19 @@ const App = () => {
         <List
           title="Product"
           items={products}
-          render={(product) => <ProductItem item={product} key={product} />}
+          kind="products"
+          render={(product) => (
+            <ProductItem product={product} key={product.productName} />
+          )}
         />
-        {/* <List
+        <List
           title="Company"
           items={companys}
-       
+          kind="company"
+          render={(company) => (
+            <CompanyItem defaultVisibility={false} company={company} />
           )}
-        /> */}
+        />
       </div>
     </div>
   );
