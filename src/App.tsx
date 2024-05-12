@@ -68,22 +68,17 @@ interface CompType {
 
 type ListType = ProdType | CompType;
 
-function List(item: ListType) {
-  const { items, title, render, kind } = item;
-  const [isOpen, setIsOpen] = useState(true);
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-  let displayItems;
-
-  kind === "company"
-    ? (displayItems = isCollapsed ? items.slice(0, 3) : items)
-    : (displayItems = isCollapsed ? items.slice(0, 3) : items);
-
-  const toggleOpen = () => {
-    setIsOpen((isOpen) => !isOpen);
-    setIsCollapsed(true);
-  };
-
+function ListComponent({
+  children,
+  title,
+  toggleOpen,
+  isOpen,
+}: {
+  title: string;
+  toggleOpen(): void;
+  isOpen: boolean;
+  children: ReactNode;
+}) {
   return (
     <div className="list-container">
       <div className="heading">
@@ -94,14 +89,73 @@ function List(item: ListType) {
         </button>
       </div>
 
-      {isOpen && <ul className="list">{displayItems?.map(render)}</ul>}
-
-      <button onClick={() => setIsCollapsed((isCollapsed) => !isCollapsed)}>
-        {" "}
-        {isCollapsed ? `Show all ${items.length}` : "Show less"}
-      </button>
+      {children}
     </div>
   );
+}
+function List(item: ListType) {
+  const { items, title, render, kind } = item;
+  const [isOpen, setIsOpen] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const toggleOpen = () => {
+    setIsOpen((isOpen) => !isOpen);
+    setIsCollapsed(true);
+  };
+
+  let displayItems;
+
+  if (kind === "company" && "companyName" in items[0]) {
+    displayItems = isCollapsed ? items.slice(0, 3) : items;
+    return (
+      <div className="list-container">
+        <div className="heading">
+          <h2>{title}</h2>
+
+          <button onClick={toggleOpen}>
+            {isOpen ? <span>&or;</span> : <span>&and;</span>}
+          </button>
+        </div>
+
+        {isOpen && <ul className="list">{displayItems?.map(render)}</ul>}
+
+        <button onClick={() => setIsCollapsed((isCollapsed) => !isCollapsed)}>
+          {" "}
+          {isCollapsed ? `Show all ${items.length}` : "Show less"}
+        </button>
+      </div>
+    );
+  } else if (kind === "products" && "productName" in items[0]) {
+    displayItems = isCollapsed ? items.slice(0, 3) : items;
+    return (
+      <ListComponent title={title} toggleOpen={toggleOpen} isOpen={isOpen}>
+        {isOpen && <ul className="list">{displayItems?.map(render)}</ul>}
+
+        <button onClick={() => setIsCollapsed((isCollapsed) => !isCollapsed)}>
+          {" "}
+          {isCollapsed ? `Show all ${items.length}` : "Show less"}
+        </button>
+      </ListComponent>
+    );
+  }
+  // return (
+  //   <div className="list-container">
+  //     <div className="heading">
+  //       <h2>{title}</h2>
+
+  //       <button onClick={toggleOpen}>
+  //         {isOpen ? <span>&or;</span> : <span>&and;</span>}
+  //       </button>
+  //     </div>
+
+  //     {isOpen && <ul className="list">{displayItems?.map(render)}</ul>}
+
+  //     <button onClick={() => setIsCollapsed((isCollapsed) => !isCollapsed)}>
+  //       {" "}
+  //       {isCollapsed ? `Show all ${items.length}` : "Show less"}
+  //     </button>
+  //   </div>
+  // );
 }
 const App = () => {
   return (
