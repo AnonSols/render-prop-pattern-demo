@@ -67,18 +67,19 @@ interface CompType {
 }
 
 type ListType = ProdType | CompType;
+type ListComponentType = {
+  title: string;
+  toggleOpen(): void;
+  isOpen: boolean;
+  children: ReactNode;
+};
 
 function ListComponent({
   children,
   title,
   toggleOpen,
   isOpen,
-}: {
-  title: string;
-  toggleOpen(): void;
-  isOpen: boolean;
-  children: ReactNode;
-}) {
+}: ListComponentType) {
   return (
     <div className="list-container">
       <div className="heading">
@@ -138,25 +139,8 @@ function List(item: ListType) {
       </ListComponent>
     );
   }
-  // return (
-  //   <div className="list-container">
-  //     <div className="heading">
-  //       <h2>{title}</h2>
-
-  //       <button onClick={toggleOpen}>
-  //         {isOpen ? <span>&or;</span> : <span>&and;</span>}
-  //       </button>
-  //     </div>
-
-  //     {isOpen && <ul className="list">{displayItems?.map(render)}</ul>}
-
-  //     <button onClick={() => setIsCollapsed((isCollapsed) => !isCollapsed)}>
-  //       {" "}
-  //       {isCollapsed ? `Show all ${items.length}` : "Show less"}
-  //     </button>
-  //   </div>
-  // );
 }
+
 const App = () => {
   return (
     <div>
@@ -179,9 +163,27 @@ const App = () => {
             <CompanyItem defaultVisibility={false} company={company} />
           )}
         />
+        <List
+          title="Product"
+          items={products}
+          kind="products"
+          render={(product) => (
+            <ProductItem product={product} key={product.productName} />
+          )}
+        />
+        <List
+          title="Company"
+          items={companys}
+          kind="company"
+          render={(company) => (
+            <CompanyItem defaultVisibility={false} company={company} />
+          )}
+        />
       </div>
     </div>
   );
 };
 
 export default App;
+
+//HOC is a component that takes another component and returns an improved vesion of the initial component
