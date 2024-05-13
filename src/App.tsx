@@ -1,7 +1,8 @@
 import { faker } from "@faker-js/faker/locale/af_ZA";
 import { ReactNode, useState } from "react";
+import withToggles from "./HOC";
 
-const products = Array.from({ length: 25 }, () => {
+export const products = Array.from({ length: 25 }, () => {
   return {
     productName: faker.commerce.productName(),
     description: faker.commerce.productDescription(),
@@ -140,12 +141,26 @@ function List(item: ListType) {
     );
   }
 }
+List;
+type ProductListType = {
+  items: typeof products;
+};
+function ProductList({ items }: ProductListType) {
+  return (
+    <ul className="list">
+      {items.map((product) => (
+        <ProductItem key={product.productName} product={product} />
+      ))}
+    </ul>
+  );
+}
+const ProductListWithToggles = withToggles(ProductList);
 
 const App = () => {
   return (
     <div>
       <h1>Render Props Demo</h1>
-
+      {/* 
       <div className="col-2">
         <List
           title="Product"
@@ -179,6 +194,11 @@ const App = () => {
             <CompanyItem defaultVisibility={false} company={company} />
           )}
         />
+      </div> */}
+
+      <div className="col-2">
+        <ProductList items={products} />
+        <ProductListWithToggles title="Product with HOC" items={products} />
       </div>
     </div>
   );

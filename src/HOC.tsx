@@ -1,19 +1,20 @@
-import { useState } from "react";
-
-interface WithToggleProps {
-  WrappedComponent({ items }: { items: string[] }): JSX.Element;
-}
+import { ReactNode, useState } from "react";
+import { products } from "./App";
 
 type ListProps = {
   title: string;
-  items: string[];
+  items: typeof products;
 };
-export default function withToggles({ WrappedComponent }: WithToggleProps) {
-  return function List(props: ListProps) {
+
+export default function withToggles(
+  WrappedComponent: ({ items }: { items: typeof products }) => ReactNode
+) {
+  return function List({ items, title }: ListProps) {
     const [isOpen, setIsOpen] = useState(true);
     const [isCollapsed, setIsCollapsed] = useState(false);
 
-    const displayItems = isCollapsed ? props.items.slice(0, 3) : props.items;
+    // const { items, title } = props;
+    const displayItems = isCollapsed ? items.slice(0, 3) : items;
 
     function toggleOpen() {
       setIsOpen((isOpen) => !isOpen);
@@ -23,15 +24,15 @@ export default function withToggles({ WrappedComponent }: WithToggleProps) {
     return (
       <div className="list-container">
         <div className="heading">
-          <h2>{props.title}</h2>
+          <h2>{title}</h2>
           <button onClick={toggleOpen}>
             {isOpen ? <span>&or;</span> : <span>&and;</span>}
           </button>
         </div>
-        {isOpen && <WrappedComponent {...props} items={displayItems} />}
+        {isOpen && <WrappedComponent {...items} items={displayItems} />}
 
         <button onClick={() => setIsCollapsed((isCollapsed) => !isCollapsed)}>
-          {isCollapsed ? `Show all ${props.items.length}` : "Show less"}
+          {isCollapsed ? `Show all ${items.length}` : "Show less"}
         </button>
       </div>
     );
