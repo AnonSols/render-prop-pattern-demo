@@ -1,4 +1,4 @@
-* {
+/* * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -104,7 +104,7 @@ h1 {
   /* border: 1px solid rebeccapurple;
   border-radius: 5px;
   padding: 12px 16px; */
-}
+/* }
 
 .company-name {
   font-weight: 700;
@@ -114,4 +114,10 @@ h1 {
   margin-top: 6px;
   font-size: 14px;
   color: rebeccapurple;
+} */
+
+/*  */
+
+body {
+  font-family: sans-serif;
 }
